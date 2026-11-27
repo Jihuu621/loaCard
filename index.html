@@ -1251,7 +1251,7 @@ function save(){if(!G)return;G.t=Date.now();try{localStorage.setItem('rift-raid'
 // 랭킹: 공유 컬렉션 rank/<uid> = {nm,cp,lv,cls,t}. 전투력·레벨·이름이 바뀔 때만 2초 모아서 씀. 개발자 수치(dv)를 바꾼 상태면 올리지 않음
 // 직접 쓰기가 막힌 보기 전용 방문자는 랭킹 코드(LR1-<base64 JSON>-<검사값>)를 복사해 주인에게 보내고, 주인이 가져오기로 rank/p_<pid>에 등록
 let rDb=null,myId=null,rkLast='',rkTm=0,rkS='cp',rk=null,rkT=0,rkL=false,rkE='',nmEd=false,rkNo=false,rkRel=false,rRoom=null,rkLive=[],rkRT=0;const rkSent={};
-const rkOk=()=>G&&Object.keys(DV0).every(k=>G.dv[k]===DV0[k]);
+const rkOk=()=>G&&(!G.dv||Object.keys(DV0).every(k=>G.dv[k]===DV0[k]));
 const rkRow=d=>({nm:cleanNm(d.nm)||'모험가',cp:clp(Math.floor(+d.cp)||0,0,1e8),lv:clp(Math.floor(+d.lv)||0,0,5000),cls:CL[d.cls]?d.cls:'warrior',pid:/^[a-z0-9]{10}$/.test(d.pid)?d.pid:''});
 const rkMine=()=>({nm:G.nm,cp:cp(),lv:ilvl(),cls:G.cls,pid:G.pid});
 // 실시간 방(room): 접속 중인 사람은 presence로 자기 기록을 알리고, 쓰기 권한이 있는 화면(주인·편집자)이 rank/<by>에 대신 저장
