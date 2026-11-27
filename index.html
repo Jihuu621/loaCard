@@ -1230,8 +1230,17 @@ const BGB=[
  BG(120,'A2 A2 A2 A2 F2 F2 F2 F2 G2 G2 G2 G2 E2 E2 E2 E2','A4 . C5 E5 A5 . G5 E5 F5 . A5 . C6 . A5 F5 G5 . B5 . D6 . B5 G5 E5 . G#5 . B5 . E6 .','sawtooth','k.hkskh.',.018),
  BG(140,'D2 D2 D3 D2 A#1 A#1 A#2 A#1 C2 C2 C3 C2 A1 A1 A2 A1','D5 . . F5 . . A5 . G5 . F5 . E5 . . . D5 . . F5 . . A#5 . A5 . G5 . A5 . . .','square','k..hs.h.kk.hs.hh'),
  BG(125,'C3 C3 G2 C3 G#2 G#2 D#3 G#2 A#2 A#2 F3 A#2 G2 G2 D3 G2','C5 D#5 G5 . C6 . G5 D#5 G#5 . C6 . D#6 . C6 G#5 A#5 . D6 . F6 . D6 A#5 B5 . D6 . G6 . F6 D6','sawtooth','k.h.skh.k.hks.hs',.018)];
+// 보스 전용 테마: 가디언(gd)·레이드 id별. 없으면 BGB에서 무작위
+const BGS={
+ gd:BG(135,'B2 B2 F#2 B2 G2 G2 D3 G2 E2 E2 B2 E2 F#2 F#2 C#3 F#2','B5 . F#5 . D5 . F#5 . B5 . C#6 . D6 . C#6 . B5 . G5 . E5 . G5 . A#5 . C#6 . F#6 . . .','triangle','k.h.skh.',.035), // 서리송곳니: 얼음
+ r1:BGB[0], // 발탄: 몰아붙이는 짐승
+ r2:BG(145,'F2 F2 C3 F2 C#2 C#2 G#2 C#2 D#2 D#2 A#2 D#2 C2 C2 G2 C2','F5 . G#5 . C6 . A#5 G#5 G5 . . . F5 . D#5 . F5 . G#5 . C#6 . C6 A#5 C6 . . . E5 . G5 .','square','k..sk.s.'), // 비아키스: 욕망
+ r3:BG(115,'E2 B2 B2 A2 E3 E3 B2 F#3 F#3 E2 B2 B2','E5 D#5 E5 . B4 . C5 . A4 . . . A5 G#5 A5 . E5 . F5 . D#5 . . .','square','k.s.s.',.02), // 쿠크세이튼: 광기의 서커스 왈츠
+ r7:BG(175,'C3 C3 C3 C3 D3 D3 D3 D3 E3 E3 E3 E3 D3 D3 D3 D3','C5 E5 G5 B5 F#5 G5 E5 D5 D5 F#5 A5 C6 B5 A5 F#5 E5 E5 G5 B5 D6 C6 B5 G5 E5 D5 F#5 A5 B5 A5 F#5 D5 .','triangle','....h.....h..s..',.035), // 아브렐슈드: 꿈
+ r8:BG(160,'E2 E2 E2 E2 A#1 A#1 A#1 A#1 E2 E2 E2 E2 F2 F2 F2 F2','E5 . . F5 . . E5 . A#4 . . . B4 . . . E5 . . F5 . . G5 . F5 . E5 . D#5 . . .','sawtooth','k...s..hk...s.h.',.016), // 일리아칸: 질병
+ r9:{...BGB[2],ms:115}}; // 카멘: 어둠, 가장 빠르고 웅장하게
 let BT=0,bi=0,bLast=null;
-function bgm(on){clearInterval(BT);BT=0;if(!on||!bOn||!sOn)return;const P=C&&C.enc&&C.enc.kind!=='ch'?BGB:BGD;let T;do T=P[rnd(0,P.length-1)];while(P.length>1&&T===bLast);bLast=T;bi=0;
+function bgm(on){clearInterval(BT);BT=0;if(!on||!bOn||!sOn)return;const e=C&&C.enc,P=e&&e.kind!=='ch'?BGB:BGD;let T=e&&(e.kind==='gd'?BGS.gd:e.kind==='raid'?BGS[e.rid]:null);if(!T)do T=P[rnd(0,P.length-1)];while(P.length>1&&T===bLast);bLast=T;bi=0;
  BT=setInterval(()=>{if(!sOn||!bOn){clearInterval(BT);BT=0;return}const b=T.b[(bi>>1)%T.b.length];if(bi%2===0&&b)tone(b,.2,'triangle',.07);const l=T.l[bi%T.l.length];if(l)tone(l,T.ms/1250,T.w,T.v);
   const d=T.d[bi%T.d.length];if(d==='k')tone(120,.08,'triangle',.09,45);else if(d==='s')noise(.07,.05);else if(d==='h')noise(.02,.025);bi++},T.ms)}
 // ---------- 저장 ----------
