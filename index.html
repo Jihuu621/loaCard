@@ -1261,16 +1261,30 @@ function rkPeers(ch){const live=[];for(const p of ch.peers||[]){const d=p.presen
  rkLive=live;if(rkRel&&rDb)live.forEach(rkRelay);if(scr==='town'&&tab==='rank'&&Date.now()-rkRT>1500){rkRT=Date.now();render()}}
 async function rkRelay(r){if(r.id===myId)return;const{id,on,...d}=r,k=JSON.stringify([d.nm,d.cp,d.lv,d.cls,d.pid]),s=rkSent[id];if(s&&(s.k===k||Date.now()-s.at<5000))return;rkSent[id]={k,at:Date.now()};
  try{const ref=rDb.doc('rank/'+id),g=await ref.get(),e=g&&typeof g.data==='function'?g.data():g;if(e&&(+e.t||0)>=d.t)return;await ref.set(d)}catch(e){delete rkSent[id]}}
-function rkPush(){rkPres();if(!rDb||!myId||!G||!rkOk())return;clearTimeout(rkTm);rkTm=setTimeout(async()=>{if(!G||!rkOk())return;const d={nm:G.nm,cp:cp(),lv:ilvl(),cls:G.cls,pid:G.pid},k=JSON.stringify(d);if(k===rkLast)return;rkLast=k;try{await rDb.doc('rank/'+myId).set({...d,t:Date.now()});rkNo=false;if(rk){const i=rk.findIndex(r=>r.id===myId);if(i>=0)rk[i]={...rk[i],...d}}}catch(e){rkLast='';if(!rkNo){rkNo=true;if(scr==='town'&&tab==='rank')render()}}},2000)}
-async function rkLoad(){if(!rDb||rkL)return;rkL=true;rkE='';try{const q=await rDb.collection('rank').orderBy(rkS,'desc').limit(100).get(),seen=new Set();
- rk=(q&&q.docs||[]).map(s=>({id:String(s.id),...rkRow((typeof s.data==='function'?s.data():s)||{})})).filter(r=>!r.pid||(seen.has(r.pid)?0:seen.add(r.pid)))}catch(e){rkE='랭킹을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'}rkL=false;rkT=Date.now();if(scr==='town'&&tab==='rank')render()}
+// 깃허브 페이지판: claude.ai가 아니면 Supabase(익명 로그인 + rank 테이블, 본인 줄만 쓰기)로 랭킹. 키는 공개용(publishable)이라 코드에 둬도 됨
+const SBU='https://rsaxvdbzrmoyfnhptoom.supabase.co',SBK='sb_publishable_xJFPaj0RDWbURSjAIYWwfg_Hg3FfOqZ';
+const SBON=!(window.claude&&claude.use)&&(location.protocol==='https:'||/[?&]sb=1/.test(location.search));
+let sbS=null,sbP=null;try{sbS=JSON.parse(localStorage.getItem('rift-raid-sb'))}catch(e){}
+const sbH=t=>({apikey:SBK,'Content-Type':'application/json',...(t?{Authorization:'Bearer '+t}:{})});
+async function sbTok(b){const r=await fetch(SBU+'/auth/v1/'+(b.refresh_token?'token?grant_type=refresh_token':'signup'),{method:'POST',headers:sbH(),body:JSON.stringify(b)});
+ if(!r.ok){const e=new Error('auth');e.st=r.status;throw e}const j=await r.json();if(!j.access_token||!j.user||!j.user.id)throw new Error('auth');
+ sbS={at:j.access_token,rt:j.refresh_token,exp:Date.now()+(+j.expires_in||3600)*1000,uid:String(j.user.id)};try{localStorage.setItem('rift-raid-sb',JSON.stringify(sbS))}catch(e){}myId=sbS.uid;return sbS}
+function sbAuth(){if(sbS&&sbS.at&&sbS.uid&&sbS.exp-Date.now()>6e4)return Promise.resolve(sbS);if(!sbP)sbP=(async()=>{try{if(sbS&&sbS.rt){try{return await sbTok({refresh_token:sbS.rt})}catch(e){if(e.st!==400&&e.st!==401)throw e;sbS=null}}return await sbTok({})}finally{sbP=null}})();return sbP}
+async function sbPush(d){const s=await sbAuth(),r=await fetch(SBU+'/rest/v1/rank?on_conflict=uid',{method:'POST',headers:{...sbH(s.at),Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({uid:s.uid,...d,nm:cleanNm(d.nm)||'모험가',pid:d.pid||null})});
+ if(r.status===401)s.exp=0;if(!r.ok)throw new Error('push '+r.status)}
+async function sbLoad(){const o=rkS==='cp'?'lv':'cp',r=await fetch(SBU+'/rest/v1/rank?select=uid,nm,cp,lv,cls,pid&order='+rkS+'.desc,'+o+'.desc&limit=100',{headers:sbH()});if(!r.ok)throw new Error('load');const j=await r.json();
+ return(Array.isArray(j)?j:[]).map(x=>({id:String(x.uid),...rkRow(x||{})}))}
+if(SBON&&sbS&&sbS.uid)myId=String(sbS.uid);
+function rkPush(){rkPres();if(!G||!rkOk()||!(rDb&&myId||SBON))return;clearTimeout(rkTm);rkTm=setTimeout(async()=>{if(!G||!rkOk())return;const d={nm:G.nm,cp:Math.floor(cp()),lv:Math.floor(ilvl()),cls:G.cls,pid:G.pid},k=JSON.stringify(d);if(k===rkLast)return;rkLast=k;try{if(rDb)await rDb.doc('rank/'+myId).set({...d,t:Date.now()});else await sbPush(d);rkNo=false;if(rk){const i=rk.findIndex(r=>r.id===myId);if(i>=0)rk[i]={...rk[i],...d}}}catch(e){rkLast='';if(!rkNo){rkNo=true;if(scr==='town'&&tab==='rank')render()}}},2000)}
+async function rkLoad(){if(!(rDb||SBON)||rkL)return;rkL=true;rkE='';try{const seen=new Set(),q=rDb?await rDb.collection('rank').orderBy(rkS,'desc').limit(100).get():null;
+ rk=(rDb?(q&&q.docs||[]).map(s=>({id:String(s.id),...rkRow((typeof s.data==='function'?s.data():s)||{})})):await sbLoad()).filter(r=>!r.pid||(seen.has(r.pid)?0:seen.add(r.pid)))}catch(e){rkE='랭킹을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'}rkL=false;rkT=Date.now();if(scr==='town'&&tab==='rank')render()}
 async function flush(){writing=true;while(pend){pend=false;try{await dbRef.set({json:JSON.stringify(G)})}catch(e){}}writing=false}
 try{G=migrate(JSON.parse(localStorage.getItem('rift-raid')))}catch(e){}
 async function cloudInit(){try{if(!window.claude||!claude.use)return;const db=await claude.use('db'),u=await claude.use('user');if(!db||!u)return;
  const id=await u.id();rDb=db;try{rkRel=!!(await u.isOwner())||!!(await u.canEdit())}catch(e){}myId=String(id);rkRoom();dbRef=db.collection('data/users/'+id).doc('save');const r=await dbRef.get();const d=r&&typeof r.data==='function'?r.data():r;
  cloud=true;if(d&&d.json){const g=migrate(JSON.parse(d.json));if(g&&(!G||(g.t||0)>(G.t||0))){G=g;if(scr!=='fight'&&scr!=='title')scr='town'}}else if(G)save();rkPush();render()}catch(e){}}
 async function rkRoom(){if(rRoom)return;try{const r=await claude.use('room');if(!r)return;rRoom=r;r.onPeers(rkPeers,()=>{});rkPres()}catch(e){}}
-cloudInit();window.__cloud=cloudInit;
+cloudInit();window.__cloud=cloudInit;if(SBON)rkPush();
 // ---------- 공용 ----------
 const $=document.getElementById('app');
 let scr='title',tab='home',C=null,RES=null,conf=false,msg='';
@@ -1723,13 +1737,13 @@ function shopH(){return `<div class="box"><h2>상점</h2><div class="list">${SHO
 function rkList(){if(!rk)return null;const L=rk.slice();for(const v of rkLive){const i=L.findIndex(r=>r.id===v.id||(v.pid&&r.pid===v.pid));if(i>=0)L[i]={...L[i],...v};else L.push(v)}
  if(rkOk()&&G&&(myId||G.pid)){const v={id:myId||'me',...rkMine(),on:1},i=L.findIndex(r=>r.id===myId||(r.pid&&r.pid===G.pid));if(!rRoom)delete v.on;if(i>=0)L[i]={...L[i],...v};else L.push(v)}
  return L.sort((a,b)=>b[rkS]-a[rkS]||b[rkS==='cp'?'lv':'cp']-a[rkS==='cp'?'lv':'cp']).slice(0,100)}
-function rankH(){if(!rDb)return `<div class="box"><h2>랭킹</h2><div class="dim">랭킹은 claude.ai에 로그인해서 플레이할 때만 볼 수 있어요.</div></div>`;
+function rankH(){if(!rDb&&!SBON)return `<div class="box"><h2>랭킹</h2><div class="dim">랭킹은 claude.ai에 로그인하거나 게임 사이트에서 플레이할 때만 볼 수 있어요.</div></div>`;
  if(!rkL&&(!rk||Date.now()-rkT>30000))setTimeout(rkLoad,0);
  const L=rkList(),me=r=>r.id===myId||(r.pid&&r.pid===G.pid),fm=r=>rkS==='cp'?[r.cp.toLocaleString(),'Lv '+r.lv]:['Lv '+r.lv,'전투력 '+r.cp.toLocaleString()],mi=L?L.findIndex(me):-1,on=rkLive.length;
  const rows=(L||[]).map((r,i)=>{const[a,b]=fm(r);return `<div class="rkr${me(r)?' rkme':''}"><span class="no" style="${i<3?`color:${['var(--gold)','#c0cbdc','#e4a672'][i]}`:''}">${i+1}</span><span class="n">${r.on?'<i class="rkon" title="접속 중"></i>':''}${esc(r.nm)}<small>${esc(CL[r.cls].n)}</small></span><span class="v"><b>${esc(a)}</b><small>${esc(b)}</small></span></div>`}).join('');
  return `<div class="box"><div class="row sp"><h2 style="margin:0">랭킹</h2><button data-a="rkr"${rkL?' disabled':''}>새로고침</button></div>
  <div class="row" style="margin:10px 0"><button class="${rkS==='cp'?'on':''}" data-a="rks" data-v="cp" aria-pressed="${rkS==='cp'}">전투력</button><button class="${rkS==='lv'?'on':''}" data-a="rks" data-v="lv" aria-pressed="${rkS==='lv'}">아이템 레벨</button></div>
- <div class="dim" style="margin-bottom:8px">${esc(G.nm)} · 전투력 ${cp().toLocaleString()} · Lv ${ilvl()} — ${!rkOk()?'개발자 수치를 바꾼 상태라 랭킹에 올라가지 않아요.':mi>=0?`지금 ${mi+1}위예요.`:rk?'상위 100위 밖이에요.':''}${rkNo&&rkOk()?'<br>기록은 게임 주인이 접속해 있을 때 자동으로 저장돼요. 그전까지는 지금 접속 중인 사람에게만 보여요.':''}</div>
+ <div class="dim" style="margin-bottom:8px">${esc(G.nm)} · 전투력 ${cp().toLocaleString()} · Lv ${ilvl()} — ${!rkOk()?'개발자 수치를 바꾼 상태라 랭킹에 올라가지 않아요.':mi>=0?`지금 ${mi+1}위예요.`:rk?'상위 100위 밖이에요.':''}${rkNo&&rkOk()?(rDb?'<br>기록은 게임 주인이 접속해 있을 때 자동으로 저장돼요. 그전까지는 지금 접속 중인 사람에게만 보여요.':'<br>기록을 서버에 올리지 못했어요. 새로고침을 누르면 다시 올려요.'):''}</div>
  ${rRoom?`<div class="dim" style="margin-bottom:8px"><i class="rkon"></i>지금 접속 중 ${on}명 · 접속 중인 기록은 바로 반영돼요</div>`:''}
  ${rkE?`<div class="dim">${rkE}</div>`:!L?`<div class="dim">불러오는 중…</div>`:L.length?`<div class="rkt">${rows}</div>`:`<div class="dim">아직 등록된 기록이 없어요.</div>`}</div>`}
 function setH(){let code='';try{code=btoa(unescape(encodeURIComponent(JSON.stringify(G))))}catch(e){}
