@@ -323,7 +323,7 @@ Object.entries(ION).forEach(([v,n])=>pc('io'+v,'iorb',v,n+' 역병 구슬','●'
 [...DIR].forEach((y,i)=>pc('ish'+i,'shadow',i,y+' 그림자',y,'v','이 방향을 노려요'));
 pc('icg','curse','g','모이기','⊕','u','모여요');pc('ics','curse','s','흩어지기','✣','h','흩어져요');
 CD.icl={n:'정화',c:1,cln:35,sym:'✚',su:'g',sp:1,ex:1,kw:'질병',dsc:'질병 -35'};CD.itu={n:'노란 종양',c:0,dmg:3,tu:1,sym:'✹',su:'b',sp:1,ex:1,kw:'종양',dsc:'피해 3 · 노란 종양 제거 · 질병 +10'};
-// 카드 등급 (장비와 같은 GR/GC: 0 일반 ~ 4 전설). 높을수록 드롭이 드물고, 영웅은 덱 2장·전설은 1장까지
+// 카드 등급 (장비와 같은 GR/GC: 0 일반 ~ 4 전설). 높을수록 드롭이 드물고 (덱 제한과는 무관)
 const CG={k1:0,k2:0,k3:0,k4:0,k6:1,k9:1,k10:1,w1:1,r4:1,m7:1,m8:1,n1:1,n2:1,n5:1,k5:2,k7:2,k8:2,w4:2,w6:2,r6:2,n4:2,r7:3,w2:3,w3:3,m5:3,w5:4},GW=[0,10,6,3,1];
 for(const k in CG)CD[k].g=CG[k];
 const x=(k,n)=>Array(n).fill(k);
@@ -336,7 +336,7 @@ const FXC={k3:[['shove','boss',0,{dy:20}]],k4:[['holy','boss',0,{dy:20}]],k5:[['
  m5:[['smash','boss',0,{dy:20}],['quake','boss',.1,{dy:50}],['meteor','boss',.2,{dy:40}]],m7:[['shout','mei',0,{dy:6}]],m8:[['breath','mei',0,{dy:10}]],
  n1:[['potion','mei',0,{dy:10}]],n2:[['whirl','boss',0,{dy:20}]],n3:[['boom','boss',0,{dy:20}]],n4:[['haste','mei',0,{dy:10}]],n5:[['voidg','boss',0,{dy:20}]],
  vorbp:[['orb','boss',0,{dy:20}]],vorbv:[['orb','boss',0,{dy:20}]],kdoll:[['madlaugh','mei',0]],kpit:[['curse','mei',0]],klev:[['snip','mei',0]],kbomb:[['kboom','boss',0,{dy:20}]],kstr:[['snip','mei',0]],vtm:[['hbrk','mei',0,{dy:10}]],vsl:[['zzz','mei',0]]};
-{const PFX={dice:'cards',eth:'bless',find:'madlaugh',dance:'juggle',roul2:'roul',plate:'bmark',fog:'poof',joker:'hammer',maze:'cards',pizza:'spin',mario:'kboom',aim:'dash',enc:'bmark',type:'meteor',gaze:'curse',shape:'shine',cube:'orb',mem:'shine',dream:'voidg',tile:'meteor',iorb:'orb',shadow:'poof',curse:'curse'};Object.keys(CD).forEach(k=>{const d=CD[k];if(d.pk)FXC[k]=[[PFX[d.pk],['eth','fog','dance','aim','gaze','shadow','curse'].includes(d.pk)?'mei':'boss',0,{dy:20,n:2,dir:k==='kzc'?-1:1}]]})}FXC.icl=[['bless','mei',0,{dy:10}]];FXC.itu=[['kboom','boss',0,{dy:20}]];const DRWCAP=2,DL=k=>!CD[k]?4:CD[k].g===4?1:CD[k].drw||CD[k].en||CD[k].g===3?2:4;
+{const PFX={dice:'cards',eth:'bless',find:'madlaugh',dance:'juggle',roul2:'roul',plate:'bmark',fog:'poof',joker:'hammer',maze:'cards',pizza:'spin',mario:'kboom',aim:'dash',enc:'bmark',type:'meteor',gaze:'curse',shape:'shine',cube:'orb',mem:'shine',dream:'voidg',tile:'meteor',iorb:'orb',shadow:'poof',curse:'curse'};Object.keys(CD).forEach(k=>{const d=CD[k];if(d.pk)FXC[k]=[[PFX[d.pk],['eth','fog','dance','aim','gaze','shadow','curse'].includes(d.pk)?'mei':'boss',0,{dy:20,n:2,dir:k==='kzc'?-1:1}]]})}FXC.icl=[['bless','mei',0,{dy:10}]];FXC.itu=[['kboom','boss',0,{dy:20}]];const DRWCAP=2,DL=k=>!CD[k]?4:CD[k].drw||CD[k].en?2:4;
 const A=(t,v)=>({k:'atk',t,v}),M=(t,v,n)=>({k:'multi',t,v,n}),K=(t,v)=>({k:'ctr',t,v}),U=(t,v)=>({k:'buff',t,v}),G_=(t,v)=>({k:'chg',t,v}),W=(t,v)=>({k:'weak',t,v}),X=(p,o)=>({...p,...o});
 const MOBS=[{n:'균열 임프',spr:'imp',hp:26,sm:20,pat:[A('할퀴기',5),A('물어뜯기',7),M('난타',2,3)]},{n:'균열 슬라임',spr:'slime',hp:34,sm:20,pat:[A('몸통박치기',6),U('부풀기',1),A('산성 침',8)]}];
 const ELITE={n:'균열 파수꾼',spr:'warden',hp:46,sm:30,pat:[K('돌격',10),A('베기',7),A('방패치기',6)]};
@@ -1719,7 +1719,7 @@ function deckH(){const so=(a,b)=>CD[a].c-CD[b].c||typ(CD[a]).localeCompare(typ(C
  return `<div class="box dkh"><div class="row sp"><h2 style="margin:0">덱 편성</h2><span class="dcount ${L<10?'o':'ok'}"><b>${L}</b> / 16</span></div>
  <div class="dst"><div class="crv" aria-label="비용 분포">${crv.map((v,i)=>`<span><i style="height:${Math.round(v/cm*28)}px"></i><em>${v}</em><small>${i<3?i:'3+'}</small></span>`).join('')}</div>
  <div class="dty3">${['atk','def','skl'].map(t=>`<span class="tag dty ${t}">${TN[t]} ${tc[t]}</span>`).join('')}</div></div>
- <div class="dim dru">${L<10?`<b style="color:var(--chg)">${10-L}장 더 넣어야 출전할 수 있어요.</b> `:''}덱은 10~16장 · 같은 카드 4장, 뽑기·기력·영웅 카드는 2장, 전설 카드는 1장까지</div></div>
+ <div class="dim dru">${L<10?`<b style="color:var(--chg)">${10-L}장 더 넣어야 출전할 수 있어요.</b> `:''}덱은 10~16장 · 같은 카드 4장, 뽑기·기력 카드는 2장까지</div></div>
  <div class="dk"><div class="box dkd">${det}</div><div>
  <div class="box"><div class="row sp" style="margin-bottom:8px"><h2 style="margin:0">덱</h2><span class="dim">칸을 눌러 카드 보기</span></div><div class="dgrid">${deck}</div></div>
  <div class="box"><div class="row sp" style="margin-bottom:8px"><h2 style="margin:0">보유 카드</h2><span class="dim">${ks.length}종</span></div>
