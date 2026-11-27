@@ -61,6 +61,7 @@ h2{font-size:15px;margin:0 0 8px;color:var(--gold)}
 .card{flex:none;width:112px;min-height:186px;padding:8px;text-align:left;display:flex;flex-direction:column;gap:3px;align-items:stretch;position:relative;background:#1a2338;scroll-snap-align:start}
 .card.atk{background:#4a1d2a}.card.def{background:#1d3050}.card.skl{background:#33245a}
 .card.no{opacity:.45}
+.card.g::after,.ct.g::after,.dt.g::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--gc);pointer-events:none}.card.g .nm,.ct.g .cn{color:var(--gc)}.g0{--gc:#c0cbdc}.g1{--gc:#63c74d}.g2{--gc:#2ce8f5}.g3{--gc:#d77bff}.g4{--gc:#fee761}.tag.gtg{color:var(--gc);box-shadow:inset 0 0 0 1px var(--gc);background:#0006}
 .card.sp{outline:2px dashed #f6757a;outline-offset:-5px}.card.su{background:#e8e2d4;color:#181425}.card.su .ds{color:#3a4466}.card.su .cart{background:#0001}
 .cart.sym{font-size:40px;line-height:1;font-family:serif;font-weight:700;text-shadow:2px 2px 0 #0004}.s-h,.s-d{color:#e43b44}.s-s,.s-c{color:#181425}.s-j{color:#b55088}.s-b{color:var(--gold)}.s-p{color:#f6757a}.s-v{color:#b55088}.s-u{color:#0099db}.s-g{color:#3e8948}.card.rf{outline:3px solid #e43b44;outline-offset:-4px}.card.rf .nm::before{content:'⚠ 반사 ';color:#e43b44}.gdq{position:fixed;inset:0;z-index:60;background:#181425e6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;text-align:center}.gdq>b{font-size:28px;color:#feae34}.gdq .sq{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}.gdq .sq span{width:44px;height:44px;display:grid;place-items:center;font-size:24px;border:2px solid #5a6988;color:#8b9bb4}.gdq .sq span.on{border-color:#feae34;color:#fff;background:#3e2731}.gdq .sq span.ok{border-color:#63c74d;color:#63c74d}.gdw{width:min(320px,100%);height:12px;background:#262b44;border:2px solid #feae34}.gdw i{display:block;height:100%;width:100%;background:#feae34}.gdq .ks{display:grid;grid-template-columns:repeat(4,64px);gap:8px}.gdq .ks button{height:64px;font-size:28px}.f2f{position:fixed;z-index:55;pointer-events:none;mix-blend-mode:screen}.f2f.r{background:#e43b44c0;box-shadow:0 0 24px 8px #e43b44}.f2f.b{background:#0099dbc0;box-shadow:0 0 24px 8px #0099db}.gc h2 .gst{display:block;font-size:.8em;color:#8b9bb4;font-weight:normal}.card.rd{outline:3px solid #e43b44;outline-offset:-4px;background-image:repeating-linear-gradient(135deg,#e43b4433 0 6px,transparent 6px 12px)}.card.rd .nm::before{content:'☠ 즉사 ';color:#e43b44}
 .tag.sp{background:#f6757a;color:#2a0510;align-self:flex-start}.tag.tm{background:#f6757a;color:#2a0510}.pc i.tm{color:#f6757a}.bcard .bv.sm{font-size:14px;letter-spacing:1px}
@@ -322,6 +323,9 @@ Object.entries(ION).forEach(([v,n])=>pc('io'+v,'iorb',v,n+' 역병 구슬','●'
 [...DIR].forEach((y,i)=>pc('ish'+i,'shadow',i,y+' 그림자',y,'v','이 방향을 노려요'));
 pc('icg','curse','g','모이기','⊕','u','모여요');pc('ics','curse','s','흩어지기','✣','h','흩어져요');
 CD.icl={n:'정화',c:1,cln:35,sym:'✚',su:'g',sp:1,ex:1,kw:'질병',dsc:'질병 -35'};CD.itu={n:'노란 종양',c:0,dmg:3,tu:1,sym:'✹',su:'b',sp:1,ex:1,kw:'종양',dsc:'피해 3 · 노란 종양 제거 · 질병 +10'};
+// 카드 등급 (장비와 같은 GR/GC: 0 일반 ~ 4 전설). 높을수록 드롭이 드물고, 영웅은 덱 2장·전설은 1장까지
+const CG={k1:0,k2:0,k3:0,k4:0,k6:1,k9:1,k10:1,w1:1,r4:1,m7:1,m8:1,n1:1,n2:1,n5:1,k5:2,k7:2,k8:2,w4:2,w6:2,r6:2,n4:2,r7:3,w2:3,w3:3,m5:3,w5:4},GW=[0,10,6,3,1];
+for(const k in CG)CD[k].g=CG[k];
 const x=(k,n)=>Array(n).fill(k);
 const CL={warrior:{n:'전사',hp:80,d:'방어와 무력화, 강한 한 방을 고루 갖춘 근접 전사',start:[...x('k1',4),...x('k2',4),'k3','k4'],pool:['k5','k6','k7','k8','k9','k10','w1','w2','w3','w4','w5','w6','r4','r7','m5','r6','m7','m8'],ult:{n:'분노 폭발',dmg:20,stg:20,blk:10}}};
 const NP=['n1','n2','n4','n5'];   // n3 파괴 폭탄: 전용 '파괴' 게이지 도입 전까지 비활성
@@ -332,7 +336,7 @@ const FXC={k3:[['shove','boss',0,{dy:20}]],k4:[['holy','boss',0,{dy:20}]],k5:[['
  m5:[['smash','boss',0,{dy:20}],['quake','boss',.1,{dy:50}],['meteor','boss',.2,{dy:40}]],m7:[['shout','mei',0,{dy:6}]],m8:[['breath','mei',0,{dy:10}]],
  n1:[['potion','mei',0,{dy:10}]],n2:[['whirl','boss',0,{dy:20}]],n3:[['boom','boss',0,{dy:20}]],n4:[['haste','mei',0,{dy:10}]],n5:[['voidg','boss',0,{dy:20}]],
  vorbp:[['orb','boss',0,{dy:20}]],vorbv:[['orb','boss',0,{dy:20}]],kdoll:[['madlaugh','mei',0]],kpit:[['curse','mei',0]],klev:[['snip','mei',0]],kbomb:[['kboom','boss',0,{dy:20}]],kstr:[['snip','mei',0]],vtm:[['hbrk','mei',0,{dy:10}]],vsl:[['zzz','mei',0]]};
-{const PFX={dice:'cards',eth:'bless',find:'madlaugh',dance:'juggle',roul2:'roul',plate:'bmark',fog:'poof',joker:'hammer',maze:'cards',pizza:'spin',mario:'kboom',aim:'dash',enc:'bmark',type:'meteor',gaze:'curse',shape:'shine',cube:'orb',mem:'shine',dream:'voidg',tile:'meteor',iorb:'orb',shadow:'poof',curse:'curse'};Object.keys(CD).forEach(k=>{const d=CD[k];if(d.pk)FXC[k]=[[PFX[d.pk],['eth','fog','dance','aim','gaze','shadow','curse'].includes(d.pk)?'mei':'boss',0,{dy:20,n:2,dir:k==='kzc'?-1:1}]]})}FXC.icl=[['bless','mei',0,{dy:10}]];FXC.itu=[['kboom','boss',0,{dy:20}]];const DRWCAP=2,DL=k=>CD[k]&&(CD[k].drw||CD[k].en)?2:4;
+{const PFX={dice:'cards',eth:'bless',find:'madlaugh',dance:'juggle',roul2:'roul',plate:'bmark',fog:'poof',joker:'hammer',maze:'cards',pizza:'spin',mario:'kboom',aim:'dash',enc:'bmark',type:'meteor',gaze:'curse',shape:'shine',cube:'orb',mem:'shine',dream:'voidg',tile:'meteor',iorb:'orb',shadow:'poof',curse:'curse'};Object.keys(CD).forEach(k=>{const d=CD[k];if(d.pk)FXC[k]=[[PFX[d.pk],['eth','fog','dance','aim','gaze','shadow','curse'].includes(d.pk)?'mei':'boss',0,{dy:20,n:2,dir:k==='kzc'?-1:1}]]})}FXC.icl=[['bless','mei',0,{dy:10}]];FXC.itu=[['kboom','boss',0,{dy:20}]];const DRWCAP=2,DL=k=>!CD[k]?4:CD[k].g===4?1:CD[k].drw||CD[k].en||CD[k].g===3?2:4;
 const A=(t,v)=>({k:'atk',t,v}),M=(t,v,n)=>({k:'multi',t,v,n}),K=(t,v)=>({k:'ctr',t,v}),U=(t,v)=>({k:'buff',t,v}),G_=(t,v)=>({k:'chg',t,v}),W=(t,v)=>({k:'weak',t,v}),X=(p,o)=>({...p,...o});
 const MOBS=[{n:'균열 임프',spr:'imp',hp:26,sm:20,pat:[A('할퀴기',5),A('물어뜯기',7),M('난타',2,3)]},{n:'균열 슬라임',spr:'slime',hp:34,sm:20,pat:[A('몸통박치기',6),U('부풀기',1),A('산성 침',8)]}];
 const ELITE={n:'균열 파수꾼',spr:'warden',hp:46,sm:30,pat:[K('돌격',10),A('베기',7),A('방패치기',6)]};
@@ -1338,11 +1342,14 @@ function giveBook(w,n,L){const got={};for(let i=0;i<n;i++){const g=roll(w),ks=Ob
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
 const pool=()=>[...CL[G.cls].pool,...NP];
+const gpick=(ex=[])=>{const P=pool().filter(k=>!ex.includes(k)),w=k=>GW[CD[k].g||1];let r=Math.random()*P.reduce((a,k)=>a+w(k),0);for(const k of P)if((r-=w(k))<0)return k;return P[P.length-1]};
+const gnm=k=>{const g=CD[k].g;return g==null?CD[k].n:`<b style="color:${GC[g]}">${CD[k].n}</b>`};
 const typ=d=>d.dmg?'atk':d.blk?'def':'skl';
 const desc=d=>{if(d.dsc)return d.dsc;const p=[];if(d.pre&&d.vul)p.push(`취약 ${d.vul}턴 먼저`);if(d.dmg)p.push(d.hits>1?`피해 ${d.dmg}×${d.hits}`:`피해 ${d.dmg}`);if(d.blk)p.push(`방어 ${d.blk}`);if(d.heal)p.push(`회복 ${d.heal}`);if(d.stg)p.push(`무력화 ${d.stg}`);if(d.vul&&!d.pre)p.push(`취약 ${d.vul}턴`);if(d.drw)p.push(`카드 ${d.drw}장`);if(d.en)p.push(`기력 +${d.en}`);if(d.seed)p.push('하늘 도약 1회 방어');if(d.tmc)p.push(`유혹 -${d.tmc}`);if(d.sl)p.push('매혹 해제 · 유혹 0');if(d.su&&d.su!=='j')p.push('카드 쇼');if(d.su==='j')p.push('아무 무늬 대신');if(d.hpc)p.push(`HP -${d.hpc}`);if(d.bg!=null)p.push('빙고 칸 표시');if(d.cut)p.push('실 끊기');
  if(d.hold)p.push('남기면 '+[d.hold.tm?`유혹 +${d.hold.tm}`:'',d.hold.b?`폭발 ${d.hold.b}`:'',d.hold.f?'빙결':''].filter(x=>x).join(' · '));if(d.ex&&!d.sp)p.push('소멸');return p.join(' · ')};
 const spK=d=>d.kw&&KW[d.kw]?d.kw:KW[d.n]?d.n:'임시';
-const cardH=(d,a,v,no,k)=>`<button class="card ${typ(d)}${d.sp?' sp':''}${d.su?' su':''}${no?' no':''}" data-a="${a}" data-v="${v}"><span class="co">${d.c}</span>${d.sym&&!CI[k]?`<span class="cart sym s-${d.su||'b'}">${d.sym}</span>`:`<span class="cart">${ico(ci(k),48)}</span>`}<span class="nm">${d.n}</span><span class="ds">${desc(d)}</span>${d.ctr?'<span class="tag c kw" data-kw="카운터">카운터</span>':''}${d.sp?`<span class="tag sp kw" data-kw="${spK(d)}">임시</span>`:''}</button>`;
+const gst=d=>d.g==null?'':` g g${d.g}`;
+const cardH=(d,a,v,no,k)=>`<button class="card ${typ(d)}${d.sp?' sp':''}${d.su?' su':''}${no?' no':''}${gst(d)}" data-a="${a}" data-v="${v}"><span class="co">${d.c}</span>${d.sym&&!CI[k]?`<span class="cart sym s-${d.su||'b'}">${d.sym}</span>`:`<span class="cart">${ico(ci(k),48)}</span>`}<span class="nm">${d.n}</span><span class="ds">${desc(d)}</span>${d.ctr?'<span class="tag c kw" data-kw="카운터">카운터</span>':''}${d.sp?`<span class="tag sp kw" data-kw="${spK(d)}">임시</span>`:''}</button>`;
 let tt=0;function toast(t){const e=document.getElementById('toast');e.innerHTML=`<div class="toast">${t}</div>`;clearTimeout(tt);tt=setTimeout(()=>e.innerHTML='',1800)}
 function checkReset(){const k=keys();if(G.daily.k!==k.dk)G.daily={k:k.dk,ch:0,gd:0};if(G.weekly.k!==k.wk){G.weekly={k:k.wk,cl:{}};G.earn=0}}
 const PKN={atk:'공격',multi:'연타',ctr:'카운터',chg:'무력화',buff:'강화',weak:'약화'};
@@ -1438,7 +1445,7 @@ const bar=(p,label,right,col)=>`<div class="bar"><i style="width:${Math.max(0,Ma
 // ---------- 전투 ----------
 const BHP=2; // 보스(레이드 관문·페이즈, 가디언) 체력 배율
 function mk(d,mul=1,str=0){mul*=dv('bhp');return{...d,hp:Math.round(d.hp*mul),mx:Math.round(d.hp*mul),stg:d.sm,str:(d.str||0)+str,vul:0,stun:false,cted:false,pi:0,p2d:false,q:[...(d.q0||[])],forms:(d.forms||[]).map(o=>({...o})),ev:(d.ev||[]).map(o=>({...o})),arm:d.arm||0,armP:d.armP||.1,lt:d.lim||0}}
-function enter(enc){G.deck=G.deck.filter(k=>CD[k]&&!CD[k].off);if(G.deck.length<10){toast('덱이 10장 이상이어야 합니다');tab='deck';render();return}
+function enter(enc){{const n={};G.deck=G.deck.filter(k=>CD[k]&&!CD[k].off&&(n[k]=(n[k]||0)+1)<=DL(k))}if(G.deck.length<10){toast('덱이 10장 이상이어야 합니다');tab='deck';render();return}
  const mh=maxHp()+ev('vital');C={enc,wave:0,B:enc.en[0],draw:shuf([...G.deck]),hand:[],disc:[],en:3,blk:0,weak:0,idg:0,log:[],fl:[],hp:mh,mh,quit:false,bl:0,ron:0,frz:0,mk:Math.random()<.5?'s':'m',wx:enc.en[0].wx||'',seed:0,tm:enc.rid==='r2'||enc.rid==='r3'?0:null,su:SU4[rnd(0,3)],pp:null,pk:null,burn:0,revN:0,mz:0,ds:enc.rid==='r8'?0:null,dsN:0,iw:0,nm:enc.en[0].gx==='nm'?0:null,kb:0,mw:0,dth:0,dark:0,tl:null,cf:null,tuy:0};
  log(`${C.B.n} 등장!`);C.enter=true;C.bdeal=true;startTurn();scr='fight';bgm(true);render();scrollTo(0,0)}
 const log=t=>{C.log.push(t);if(C.log.length>3)C.log.shift()};
@@ -1614,13 +1621,13 @@ function endTurn(){const B=C.B;bPlay(B.stun||B.cted);C.bdeal=true;holdP();C.disc
  if(C.hp<=0){lose('쓰러졌습니다');return}startTurn();if(B.hp<=0){after();return}render()}
 function lose(t){bgm(false);sfx('lose');RES={win:false,title:t,L:['보상이 없습니다. 입장 횟수는 차감되지 않았어요.']};scr='res';C=null;render()}
 function win(){bgm(false);sfx('win');runFx([['poof','boss',0],['confetti','mid',.2]]);const e=C.enc,L=[];const gold=v=>{G.gold+=v;L.push(`${ico('gold')} 골드 +${v}`)},mat=(k,v)=>{G.mat[k]+=v;L.push(`${ico(k)} ${MATN[k]} +${v}`)},hm=(k,v)=>{G.hm[k]+=v;L.push(`${ico(k)} ${HM[k][0]} +${v}`)};
- const drop=()=>{const k=pool()[rnd(0,pool().length-1)];G.cards[k]=(G.cards[k]||0)+1;L.push(`${ico(ci(k))} 카드 획득 — ${CD[k].n}`)};let picks=null;const t=e.t;
+ const drop=()=>{const k=gpick();G.cards[k]=(G.cards[k]||0)+1;L.push(`${ico(ci(k))} 카드 획득 — ${gnm(k)}`)};let picks=null;const t=e.t;
  if(e.kind==='ch'){G.daily.ch++;gold(60*t+rnd(0,40));mat('des',20*t+rnd(0,10));mat('grd',20*t+rnd(0,10));if(t>=2||Math.random()<.5)mat('brk',t);if(Math.random()<.35)drop();if(Math.random()<.5)giveItem(genItem(GT.ch[t-1]),L);giveBook(GT.ch[t-1],2,L);
   hm('hlv',t*rnd(1,3));hm('hgl',t*rnd(3,6))}
  else if(e.kind==='gd'){G.daily.gd++;gold(100*t+rnd(0,50));mat('des',12*t);mat('grd',12*t);mat('brk',2*t+1);if(Math.random()<.6)drop();giveItem(genItem(GT.gd[t-1]),L);giveBook(GT.gd[t-1],3,L);
   hm('hlv',t*rnd(3,5));hm('hgl',t*rnd(6,10))}
  else{const R=RAIDS.find(r=>r.id===e.rid),g=R.gates[e.gi];G.weekly.cl[e.rid]=e.gi+1;gold(g.gold);G.earn+=g.gold;mat('des',30+e.gi*10);mat('grd',30+e.gi*10);mat('brk',3+e.gi*2);
-  picks=shuf([...new Set(shuf(pool()))]).slice(0,3);giveItem(genItem(GT[e.rid]),L);if(e.gi===R.gates.length-1)giveItem(genItem(GT[e.rid]),L);
+  picks=[];while(picks.length<3)picks.push(gpick(picks));giveItem(genItem(GT[e.rid]),L);if(e.gi===R.gates.length-1)giveItem(genItem(GT[e.rid]),L);
   giveBook(GT[e.rid],e.gi===R.gates.length-1?8:4,L);hm(Math.random()<.5?'hbw':'hba',1);hm('hlv',8+e.gi*2);hm('hgl',16+e.gi*4);if(e.gi===R.gates.length-1){hm('hbw',1);hm('hba',1)}}
  save();RES={win:true,title:`${e.title} 클리어!`,L,picks};C=null;scr='res';render();scrollTo(0,0)}
 // ---------- 입장 ----------
@@ -1703,16 +1710,16 @@ function deckH(){const so=(a,b)=>CD[a].c-CD[b].c||typ(CD[a]).localeCompare(typ(C
  let det='<div class="dim">보유한 카드가 없습니다.</div>';
  if(dsel){const d=CD[dsel],n=cnt(dsel),lim=Math.min(G.cards[dsel],DL(dsel)),t=typ(d);
   det=`<div class="dprev card ${t}${d.su?' su':''}"><span class="co">${d.c}</span>${art(dsel,48)}</div>
-  <div class="dinf"><b class="dnm">${d.n}</b><div class="row" style="gap:4px;margin:2px 0"><span class="tag dty ${t}">${TN[t]}</span>${d.ctr?kw('카운터','카운터','tag c'):''}${DL(dsel)<4?'<span class="tag">덱 2장 제한</span>':''}</div><div class="ds">${desc(d)}</div></div>
+  <div class="dinf"><b class="dnm">${d.n}</b><div class="row" style="gap:4px;margin:2px 0">${d.g!=null?`<span class="tag gtg g${d.g}">${GR[d.g]}</span>`:''}<span class="tag dty ${t}">${TN[t]}</span>${d.ctr?kw('카운터','카운터','tag c'):''}${DL(dsel)<4?`<span class="tag">덱 ${DL(dsel)}장 제한</span>`:''}</div><div class="ds">${desc(d)}</div></div>
   <div class="dq"><button data-a="dm" data-v="${dsel}" ${n?'':'disabled'}>− 빼기</button><span class="dn"><b>${n}</b>/${lim}<small>보유 ${G.cards[dsel]}</small></span><button class="gold" data-a="dp" data-v="${dsel}" ${n<lim&&L<16?'':'disabled'}>+ 넣기</button></div>`}
  const nwI=dnew?D.lastIndexOf(dnew):-1;dnew=null;
- const deck=D.map((k,i)=>`<button class="dt ${typ(CD[k])}${k===dsel?' on':''}${i===nwI?' nw':''}" data-a="dsel" data-v="${k}" aria-label="${CD[k].n}"><span class="dc">${CD[k].c}</span>${art(k,48)}</button>`).join('')+Array.from({length:16-L},(_,i)=>`<i class="dt e${L+i<10?' req':''}"></i>`).join('');
+ const deck=D.map((k,i)=>`<button class="dt ${typ(CD[k])}${k===dsel?' on':''}${i===nwI?' nw':''}${gst(CD[k])}" data-a="dsel" data-v="${k}" aria-label="${CD[k].n}"><span class="dc">${CD[k].c}</span>${art(k,48)}</button>`).join('')+Array.from({length:16-L},(_,i)=>`<i class="dt e${L+i<10?' req':''}"></i>`).join('');
  const vis=ks.filter(k=>dflt==='all'||typ(CD[k])===dflt);
- const col=vis.map(k=>{const d=CD[k],n=cnt(k),lim=Math.min(G.cards[k],DL(k));return `<button class="ct ${typ(d)}${k===dsel?' on':''}${n>=lim?' full':''}" data-a="dsel" data-v="${k}"><span class="dc">${d.c}</span>${art(k,48)}<span class="cn">${d.n}</span><span class="cq${n?' in':''}">${n}/${lim}</span></button>`}).join('')||'<span class="dim">해당 종류의 카드가 없습니다.</span>';
+ const col=vis.map(k=>{const d=CD[k],n=cnt(k),lim=Math.min(G.cards[k],DL(k));return `<button class="ct ${typ(d)}${k===dsel?' on':''}${n>=lim?' full':''}${gst(d)}" data-a="dsel" data-v="${k}"><span class="dc">${d.c}</span>${art(k,48)}<span class="cn">${d.n}</span><span class="cq${n?' in':''}">${n}/${lim}</span></button>`}).join('')||'<span class="dim">해당 종류의 카드가 없습니다.</span>';
  return `<div class="box dkh"><div class="row sp"><h2 style="margin:0">덱 편성</h2><span class="dcount ${L<10?'o':'ok'}"><b>${L}</b> / 16</span></div>
  <div class="dst"><div class="crv" aria-label="비용 분포">${crv.map((v,i)=>`<span><i style="height:${Math.round(v/cm*28)}px"></i><em>${v}</em><small>${i<3?i:'3+'}</small></span>`).join('')}</div>
  <div class="dty3">${['atk','def','skl'].map(t=>`<span class="tag dty ${t}">${TN[t]} ${tc[t]}</span>`).join('')}</div></div>
- <div class="dim dru">${L<10?`<b style="color:var(--chg)">${10-L}장 더 넣어야 출전할 수 있어요.</b> `:''}덱은 10~16장 · 같은 카드 4장, 뽑기·기력 카드는 2장까지</div></div>
+ <div class="dim dru">${L<10?`<b style="color:var(--chg)">${10-L}장 더 넣어야 출전할 수 있어요.</b> `:''}덱은 10~16장 · 같은 카드 4장, 뽑기·기력·영웅 카드는 2장, 전설 카드는 1장까지</div></div>
  <div class="dk"><div class="box dkd">${det}</div><div>
  <div class="box"><div class="row sp" style="margin-bottom:8px"><h2 style="margin:0">덱</h2><span class="dim">칸을 눌러 카드 보기</span></div><div class="dgrid">${deck}</div></div>
  <div class="box"><div class="row sp" style="margin-bottom:8px"><h2 style="margin:0">보유 카드</h2><span class="dim">${ks.length}종</span></div>
@@ -1879,7 +1886,7 @@ function act(b){const a=b.dataset.a,v=b.dataset.v;ac();
  else if(a==='ch')return goCh();else if(a==='gd')return goGd();else if(a==='raid')return goRaid(v);
  else if(a==='play')return play(+v);else if(a==='end')return endTurn();else if(a==='ult')return ult();else if(a==='mkw')return mkSw();
  else if(a==='quit'){if(C.quit)return lose('후퇴했습니다');C.quit=true}
- else if(a==='pk'){sfx('coin');G.cards[v]=(G.cards[v]||0)+1;save();toast(`${CD[v].n} 획득`);RES=null;scr='town'}
+ else if(a==='pk'){sfx('coin');G.cards[v]=(G.cards[v]||0)+1;save();toast(`${gnm(v)} 획득`);RES=null;scr='town'}
  else if(a==='home'){RES=null;scr='town'}
  else if(a==='ref')return refine(v);
  else if(a==='rsel')rsel=v;else if(a==='hmu'&&HM[v])hU[v]=hU[v]?0:1;else if(a==='eq')equip(+v);else if(a==='slv')salvOne(+v);else if(a==='slvall')salvLow();
@@ -1893,7 +1900,7 @@ function act(b){const a=b.dataset.a,v=b.dataset.v;ac();
  else if(a==='sell')sell(v);
  else if(a==='buy'){const it=SHOP.find(s=>s[0]===v);if(!it||G.gold<it[3])return;G.gold-=it[3];sfx('coin');
   if(v==='eb0'||v==='eb1'){const g=+v[2],n=g?3:5;giveBook(g?[0,1]:[1],n,[]);toast(`${GR[g]} 각인서 ${n}권 — 각인 탭에서 읽을 수 있어요`)}
-  else if(v==='pack'){const k=pool()[rnd(0,pool().length-1)];G.cards[k]=(G.cards[k]||0)+1;toast(`카드 획득 — ${CD[k].n}`)}else{const n=v==='brk'?3:30;G.mat[v]+=n;toast(`${MATN[v]} +${n}`)}save()}
+  else if(v==='pack'){const k=gpick();G.cards[k]=(G.cards[k]||0)+1;toast(`카드 획득 — ${gnm(k)}`)}else{const n=v==='brk'?3:30;G.mat[v]+=n;toast(`${MATN[v]} +${n}`)}save()}
  else if(a==='copy'){const t=document.getElementById('exp').value;try{navigator.clipboard.writeText(t).then(()=>toast('복사했습니다'),()=>toast('직접 선택해 복사해 주세요'))}catch(er){toast('직접 선택해 복사해 주세요')}return}
  else if(a==='imp'){try{const g=migrate(JSON.parse(decodeURIComponent(escape(atob(document.getElementById('imp').value.trim())))));if(!g)throw 0;G=g;save();toast('불러왔습니다');tab='home'}catch(er){toast('올바른 저장 코드가 아닙니다')}}
  else if(a==='conf')conf=true;else if(a==='nowipe')conf=false;
