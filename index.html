@@ -1770,7 +1770,7 @@ const pLock=k=>{const d=CD[k];if(!d||!d.once)return false;return !!(C.pu&&C.pu[k
 const noPlay=k=>CD[k].c>C.en||pLock(k)||!!(CD[k].adr&&C.hp<=adrC());
 const rdBan=i=>!!(C.rd&&intent().rd&&!C.B.stun&&!C.B.cted&&i%2===(C.rd==='o'?0:1));
 function play(i){const d=CD[C.hand[i]];if(!d)return;if(d.c>C.en){log('기력이 부족합니다');render();return}if(pLock(C.hand[i])){toast(`${d.n}은 이번 관문에서 이미 썼어요`);return}if(d.adr&&C.hp<=adrC()){toast(`HP가 ${adrC()}보다 많아야 해요`);return}if(d.once)(C.pu=C.pu||{})[C.hand[i]]=1;
- const rf=C.rf&&(d.dmg||d.stg)&&(i===0||i===C.hand.length-1),rd=rdBan(i);C.en-=d.c;const pk_=C.hand.splice(i,1)[0];if(!d.ex)C.disc.push(pk_);sfx('card');
+ const rf=C.rf&&(d.dmg||d.stg)&&(i===0||i===C.hand.length-1),rd=rdBan(i);C.en-=d.c;const pk_=C.hand.splice(i,1)[0];if(!d.ex)C.disc.push(pk_);sfx('card');if(d.once){const o=k=>k!==pk_,n=C.draw.length+C.disc.length+C.hand.length;C.draw=C.draw.filter(o);C.disc=C.disc.filter(o);C.hand=C.hand.filter(o);C.fresh=[];if(C.draw.length+C.disc.length+C.hand.length<n)log(`${d.n} — 남은 사본도 이번 관문 동안 덱에서 빠졌어요`)}
  if(rd){lose(`${i+1}번째 카드를 냈다 — 붉은 카멘에게 베였습니다`);return}
  if(rf){const x=(d.dmg||0)*(d.hits||1)+(d.stg?8:0);C.hp=Math.max(0,C.hp-pdm(x));C.hit=true;C.ban=['반사!','w'];fqP(['parry','mei',0]);log(`반격 자세에 반사됐다 — ${x} 피해`);if(C.hp<=0){lose('쓰러졌습니다');return}render();return}
  apply(d,pk_);if(!C)return;if(C.pk&&C.pk.gaze&&d.dmg){C.frz=Math.max(C.frz||0,1);addTm(10);log('안개 속 쿠크의 눈길 — 공포! 광기 +10')}C.idg=Math.min(100,C.idg+(d.dmg?14:9)*(1+ev('awake')/100));after()}
