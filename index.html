@@ -246,8 +246,8 @@ button.slot{cursor:pointer}button.slot:disabled{cursor:default}
 @keyframes hurt{0%,66%{filter:brightness(4) saturate(0)}33%,100%{filter:none}}
 @keyframes lunge{40%{transform:scale(1.18) translateY(14px)}}
 @keyframes drop{from{transform:translateY(-120px);opacity:0}to{transform:none;opacity:1}}
-.card.deal{animation:deal .3s cubic-bezier(.2,.7,.3,1) both}
-@keyframes deal{from{opacity:0;transform:translate(60px,30px) rotate(10deg)}to{opacity:1;transform:none}}
+.card.deal{animation:deal .3s cubic-bezier(.2,.7,.3,1) backwards}
+@keyframes deal{from{opacity:0;transform:translate(60px,30px) rotate(10deg)}to{transform:none}}
 .ult.rdy{animation:pulse .8s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 3px var(--k),0 0 0 6px #9b6bff}}
 .banner{position:fixed;inset:0;z-index:20;display:grid;place-items:center;pointer-events:none;font-weight:700;font-size:44px;text-shadow:4px 4px 0 var(--k);animation:ban .8s cubic-bezier(.2,.7,.3,1) forwards}
 .banner.k{color:var(--ctr);background:#3fe0cf22}.banner.b{color:#fff;background:#ffffff33}.banner.w{color:var(--gold)}.banner.d{color:var(--hp);background:#e0344f22}
