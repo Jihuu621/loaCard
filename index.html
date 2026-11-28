@@ -1524,13 +1524,13 @@ const desc=d=>{if(d.dsc)return d.dsc;const p=[];if(d.pre&&d.vul)p.push(`취약 $
  if(d.hold)p.push('남기면 '+[d.hold.tm?`유혹 +${d.hold.tm}`:'',d.hold.b?`폭발 ${d.hold.b}`:'',d.hold.f?'빙결':''].filter(x=>x).join(' · '));if(d.ex&&!d.sp)p.push('소멸');return p.join(' · ')};
 const spK=d=>d.kw&&KW[d.kw]?d.kw:KW[d.n]?d.n:'임시';
 const gst=d=>d.g==null?'':` g g${d.g}`;
-const cardH=(d,a,v,no,k)=>`<button class="card ${typ(d)}${d.sp?' sp':''}${d.su?' su':''}${no?' no':''}${gst(d)}" data-a="${a}" data-v="${v}"><span class="co">${d.c}</span>${d.sym&&!CI[k]?`<span class="cart sym s-${d.su||'b'}">${d.sym}</span>`:`<span class="cart">${ico(ci(k),48)}</span>`}<span class="nm">${d.n}</span><span class="ds">${desc(d)}</span>${d.ctr?'<span class="tag c kw" data-kw="카운터">카운터</span>':''}${d.tst?'<span class="tag c kw" data-kw="시간 정지">시간 정지</span>':''}${d.once?'<span class="tag c kw" data-kw="레이드당 1번">1회</span>':''}${d.sp?`<span class="tag sp kw" data-kw="${spK(d)}">임시</span>`:''}</button>`;
+const cardH=(d,a,v,no,k)=>`<button class="card ${typ(d)}${d.sp?' sp':''}${d.su?' su':''}${no?' no':''}${gst(d)}" data-a="${a}" data-v="${v}"><span class="co">${d.c}</span>${d.sym&&!CI[k]?`<span class="cart sym s-${d.su||'b'}">${d.sym}</span>`:`<span class="cart">${ico(ci(k),48)}</span>`}<span class="nm">${d.n}</span><span class="ds">${desc(d)}</span>${d.ctr?'<span class="tag c kw" data-kw="카운터">카운터</span>':''}${d.tst?'<span class="tag c kw" data-kw="시간 정지">시간 정지</span>':''}${d.once?'<span class="tag c kw" data-kw="관문당 1번">1회</span>':''}${d.sp?`<span class="tag sp kw" data-kw="${spK(d)}">임시</span>`:''}</button>`;
 let tt=0;function toast(t){const e=document.getElementById('toast');e.innerHTML=`<div class="toast">${t}</div>`;clearTimeout(tt);tt=setTimeout(()=>e.innerHTML='',1800)}
 function checkReset(){const k=keys();if(G.daily.k!==k.dk)G.daily={k:k.dk,ch:0,gd:0};if(G.weekly.k!==k.wk){G.weekly={k:k.wk,cl:{}};G.earn=0}}
 const PKN={atk:'공격',multi:'연타',ctr:'카운터',chg:'무력화',buff:'강화',weak:'약화'};
 // 공략을 숨기는 보스 기믹 설명 (KW 공용)
 const KWG='보스의 기믹이에요. 어떻게 넘길지는 직접 알아내야 해요.';
-const KW={'아드로핀':'공격력 +30% · 매 턴 최대 기력 +1. 턴이 끝날 때마다 1씩 줄어요.','레드 더스트':'공격력이 올라요. 턴이 끝날 때마다 1씩 줄어요.','레이드당 1번':'레이드마다 한 번만 쓸 수 있어요. 관문에서 지면 다시 쓸 수 있어요. 레이드가 아닌 전투에서는 전투마다 한 번.','취약':'받는 피해 +20%. 턴이 끝날 때마다 1씩 줄어요.','쇠약':'주는 피해 -25%. 턴이 끝날 때마다 1씩 줄어요.',
+const KW={'아드로핀':'공격력 +30% · 매 턴 최대 기력 +1. 턴이 끝날 때마다 1씩 줄어요.','레드 더스트':'공격력이 올라요. 턴이 끝날 때마다 1씩 줄어요.','관문당 1번':'관문마다 한 번만 쓸 수 있어요. 다음 관문에서는 다시 쓸 수 있어요. 레이드가 아닌 전투에서는 전투마다 한 번.','취약':'받는 피해 +20%. 턴이 끝날 때마다 1씩 줄어요.','쇠약':'주는 피해 -25%. 턴이 끝날 때마다 1씩 줄어요.',
  '출혈':'턴이 끝날 때 중첩×2 피해.',
  '빙결·공포':'다음 턴 기력 -1.','빙결':'다음 턴 기력 -1.',
  '로나운의 기운':'전멸기를 1회 막아 줘요.',
@@ -1766,10 +1766,10 @@ function apply(d,ck){const B=C.B;C.hn=0;const q=C.fq=C.fq||[],cf=FXC[ck];if(d.bl
  if(d.stg)stagger(d.stg);if(d.drw){const n=Math.min(d.drw,DRWCAP-(C.dw||0));if(n>0){C.dw=(C.dw||0)+n;draw(n)}else log('이번 턴엔 더 뽑을 수 없습니다')}if(d.en)C.en=C.ecap?Math.min(C.ecap,C.en+d.en):C.en+d.en;if(d.tst){C.tst=1;C.ban=['시간 정지!','k'];log('시간 정지 물약 — 이번 턴 받는 피해를 무시해요 (기믹형 전멸기 제외)')}if(d.seed){C.seed=1;log('빛의 씨앗을 품었다 — 하늘 도약을 1회 버텨요')}if(d.pw){C.rdu=Math.max(C.rdu||0,d.pwt);C.rdu_v=Math.max(C.rdu_v||0,d.pw);log(`${d.n} — ${d.pwt}턴간 공격력 +${d.pw}%`)}if(d.adr){const c=adrC();C.hp=Math.max(1,C.hp-c);C.hit=true;C.adr=3;if(!C.ecap)C.en+=1;C.ban=['아드레날린!','w'];log(`아드로핀 물약 — HP -${c}, 3턴간 공격력 +30% · 최대 기력 +1`)}if(d.awk){C.idg=100;C.ban=['각성!','k'];log('각성 물약 — 아이덴티티 게이지가 가득 찼다')}if(d.sp)spA(d)}
 // 붉은 카멘(빨멘, 카멘 3관): 금지된 홀/짝 자리의 카드를 내면 즉사. 무력화·카운터로 끊으면 해제
 const adrC=()=>Math.ceil(C.mh*.33);
-const pLock=k=>{const d=CD[k];if(!d||!d.once)return false;if(C.pu&&C.pu[k])return true;const w=C.enc.kind==='raid'&&G.weekly.pu&&G.weekly.pu[C.enc.rid];return !!(w&&w[k])};
+const pLock=k=>{const d=CD[k];if(!d||!d.once)return false;return !!(C.pu&&C.pu[k])};
 const noPlay=k=>CD[k].c>C.en||pLock(k)||!!(CD[k].adr&&C.hp<=adrC());
 const rdBan=i=>!!(C.rd&&intent().rd&&!C.B.stun&&!C.B.cted&&i%2===(C.rd==='o'?0:1));
-function play(i){const d=CD[C.hand[i]];if(!d)return;if(d.c>C.en){log('기력이 부족합니다');render();return}if(pLock(C.hand[i])){toast(`${d.n}은 이번 레이드에서 이미 썼어요`);return}if(d.adr&&C.hp<=adrC()){toast(`HP가 ${adrC()}보다 많아야 해요`);return}if(d.once)(C.pu=C.pu||{})[C.hand[i]]=1;
+function play(i){const d=CD[C.hand[i]];if(!d)return;if(d.c>C.en){log('기력이 부족합니다');render();return}if(pLock(C.hand[i])){toast(`${d.n}은 이번 관문에서 이미 썼어요`);return}if(d.adr&&C.hp<=adrC()){toast(`HP가 ${adrC()}보다 많아야 해요`);return}if(d.once)(C.pu=C.pu||{})[C.hand[i]]=1;
  const rf=C.rf&&(d.dmg||d.stg)&&(i===0||i===C.hand.length-1),rd=rdBan(i);C.en-=d.c;const pk_=C.hand.splice(i,1)[0];if(!d.ex)C.disc.push(pk_);sfx('card');
  if(rd){lose(`${i+1}번째 카드를 냈다 — 붉은 카멘에게 베였습니다`);return}
  if(rf){const x=(d.dmg||0)*(d.hits||1)+(d.stg?8:0);C.hp=Math.max(0,C.hp-pdm(x));C.hit=true;C.ban=['반사!','w'];fqP(['parry','mei',0]);log(`반격 자세에 반사됐다 — ${x} 피해`);if(C.hp<=0){lose('쓰러졌습니다');return}render();return}
@@ -1809,7 +1809,7 @@ function win(){bgm(false);sfx('win');runFx([['poof','boss',0],['confetti','mid',
   hm('hlv',t*rnd(1,3));hm('hgl',t*rnd(3,6))}
  else if(e.kind==='gd'){G.daily.gd++;gold(100*t+rnd(0,50));mat('des',12*t);mat('grd',12*t);mat('brk',2*t+1);if(Math.random()<.6)drop();giveItem(genItem(GT.gd[t-1]),L);giveBook(GT.gd[t-1],3,L);
   hm('hlv',t*rnd(3,5));hm('hgl',t*rnd(6,10))}
- else{const R=RAIDS.find(r=>r.id===e.rid),g=R.gates[e.gi];G.weekly.cl[e.rid]=e.gi+1;if(C.pu){G.weekly.pu=G.weekly.pu||{};G.weekly.pu[e.rid]=Object.assign(G.weekly.pu[e.rid]||{},C.pu)}gold(g.gold);G.earn+=g.gold;mat('des',30+e.gi*10);mat('grd',30+e.gi*10);mat('brk',3+e.gi*2);
+ else{const R=RAIDS.find(r=>r.id===e.rid),g=R.gates[e.gi];G.weekly.cl[e.rid]=e.gi+1;gold(g.gold);G.earn+=g.gold;mat('des',30+e.gi*10);mat('grd',30+e.gi*10);mat('brk',3+e.gi*2);
   picks=[];while(picks.length<3)picks.push(gpick(picks));giveItem(genItem(GT[e.rid]),L);if(e.gi===R.gates.length-1)giveItem(genItem(GT[e.rid]),L);
   giveBook(GT[e.rid],e.gi===R.gates.length-1?8:4,L);hm(Math.random()<.5?'hbw':'hba',1);hm('hlv',8+e.gi*2);hm('hgl',16+e.gi*4);if(e.gi===R.gates.length-1){hm('hbw',1);hm('hba',1)}}
  save();RES={win:true,title:`${e.title} 클리어!`,L,picks};C=null;scr='res';render();scrollTo(0,0)}
