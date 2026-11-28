@@ -112,10 +112,10 @@ h2{font-size:15px;margin:0 0 8px;color:var(--gold)}
 .art.ctr{box-shadow:inset 0 0 0 3px var(--ctr)}.art.ctr.trp{box-shadow:inset 0 0 0 3px #e43b44,inset 0 0 18px #e43b4466}.art.chg{box-shadow:inset 0 0 0 3px var(--chg)}
 .intent{position:absolute;left:50%;top:4px;transform:translateX(-50%);background:var(--k);padding:2px 10px;white-space:nowrap;display:flex;gap:6px;align-items:center}
 .intent .v{color:#ff6b7d;font-weight:700}
-.chips{position:absolute;left:6px;bottom:6px;display:flex;gap:4px;flex-wrap:wrap}
-.fl{position:absolute;left:50%;top:40%;font-weight:700;font-size:24px;color:#fff;text-shadow:3px 3px 0 #a0122a;pointer-events:none;animation:up .9s cubic-bezier(.2,.7,.3,1) forwards}
+.chips{position:absolute;z-index:4;left:6px;bottom:6px;display:flex;gap:4px;flex-wrap:wrap}
+.fl{position:absolute;z-index:5;left:50%;top:40%;font-weight:700;font-size:24px;color:#fff;text-shadow:3px 3px 0 #a0122a;pointer-events:none;animation:up .9s cubic-bezier(.2,.7,.3,1) forwards}
 .fl.s{font-size:14px;text-shadow:2px 2px 0 #333}.fl.k{color:var(--ctr);text-shadow:3px 3px 0 #053}
-.fl.c{font-size:40px;color:#fee761;text-shadow:3px 3px 0 #a33a00,-1px -1px 0 #000;animation-name:upc;animation-duration:1.1s}@keyframes upc{0%{opacity:0;transform:translate(-50%,0) scale(2.2)}15%{opacity:1;transform:translate(-50%,0) scale(.9)}25%{transform:translate(-50%,0) scale(1.05)}to{opacity:0;transform:translate(-50%,-64px) scale(1)}}
+.fl.c{color:#fee761;text-shadow:3px 3px 0 #a33a00}@keyframes upc{0%{opacity:0;transform:translate(-50%,0) scale(2.2)}15%{opacity:1;transform:translate(-50%,0) scale(.9)}25%{transform:translate(-50%,0) scale(1.05)}to{opacity:0;transform:translate(-50%,-64px) scale(1)}}
 .me{position:relative}.fl.pf{left:40px;top:10%;font-size:26px;color:#fff;text-shadow:3px 3px 0 #a0122a;z-index:3}.fl.pf.b{font-size:17px;color:#c0cbdc;text-shadow:2px 2px 0 #262b44}
 .tag.sun{background:#fee761;color:#3a2405}.tag.moon{background:#8fb8ff;color:#0c1838}
 
@@ -1787,7 +1787,7 @@ function roul(){const B=C.B,r=rnd(0,3);C.fl.push(['룰렛!','']);
  else{give('kstr',2);log('광기의 룰렛 — 마리오네트! 다음 턴 손패에 실 2장')}}
 function startTurn(){if(C.wu>0)C.wu--;C.dw=0;C.dd=0;C.cs=!!(C.B&&intent().calm);C.blk=sBlk()+ev('wall');C.en=Math.max(0,dv('en')+ev('mana')-(C.frz||0));C.ecap=0;if(C.adr>0)C.en+=1;if(C.tsN){C.tsN=0;C.en=C.ecap=2;log('시간 정지의 여파 — 이번 턴 기력 2 고정')}if(C.frz){log(`${C.frzN||(C.frz>1?'광대':'빙결·공포')} — 이번 턴 기력 -${C.frz}`);C.frz=0;C.frzN=0}if(C.chm){C.en=0;if(!C.hand.includes('vsl'))give('vsl');log('매혹 — 기력 0!')}draw(dv('drw')-(C.wx==='day'?1:0));if(C.stnN){C.stnN=0;C.stn=1;C.stnE=C.en;C.en=0;if(!C.wu){give('wup');log('넘어졌어요 — 기상기로 바로 일어나거나, 아껴 두고 이번 턴을 넘길 수 있어요')}else log(`넘어졌어요 — 기상기 충전 중(${C.wu}턴 남음). 이번 턴엔 행동할 수 없고 받는 피해 +30%`)}prep()}
 function mkSw(){if(!C||!C.B.mk||C.stn)return;if(C.en<1){log('기력이 부족합니다');render();return}C.en--;C.mk=C.mk==='s'?'m':'s';sfx('card');log(`표식 전환 — ${MKN[C.mk]}`);render()}
-function hit(v){const B=C.B;let m=dmgMul()*dv('pdm')*(1+ev('rage')/100)*(1+ev('doll')/100);if(C.hp>=C.mh*.8)m*=1+ev('stab')/100;if(C.blk>0)m*=1+ev('barr')/100;if(B.vul>0)m*=1.2;if(C.adr>0)m*=1.3;if(C.rdu>0)m*=1+C.rdu_v/100;if(B.arm)m*=1-B.arm*B.armP;if(B.abs)m*=1-Math.min(.7,B.abs*.1);if(C.weak>0)m*=.75;const cr=Math.random()<crR();let d=Math.round(v*m*(cr?crD():1));if(B.sh>0){const a=Math.min(B.sh,d);B.sh-=a;d-=a;C.fl.push([`보호막 -${a}`,'s']);if(!B.sh){C.fl.push(['보호막 파괴!','k']);log('보호막을 깨뜨렸다!')}}B.hp=Math.max(B.q&&B.q.some(p=>p.die)?1:0,B.hp-d);C.dd=1;C.fl.push(cr?[`치명 ${d}`,'c']:[d,'']);C.shake=true;sfx('hit',(C.hn=(C.hn||0)+1)*.06-.06);
+function hit(v){const B=C.B;let m=dmgMul()*dv('pdm')*(1+ev('rage')/100)*(1+ev('doll')/100);if(C.hp>=C.mh*.8)m*=1+ev('stab')/100;if(C.blk>0)m*=1+ev('barr')/100;if(B.vul>0)m*=1.2;if(C.adr>0)m*=1.3;if(C.rdu>0)m*=1+C.rdu_v/100;if(B.arm)m*=1-B.arm*B.armP;if(B.abs)m*=1-Math.min(.7,B.abs*.1);if(C.weak>0)m*=.75;const cr=Math.random()<crR();let d=Math.round(v*m*(cr?crD():1));if(B.sh>0){const a=Math.min(B.sh,d);B.sh-=a;d-=a;C.fl.push([`보호막 -${a}`,'s']);if(!B.sh){C.fl.push(['보호막 파괴!','k']);log('보호막을 깨뜨렸다!')}}B.hp=Math.max(B.q&&B.q.some(p=>p.die)?1:0,B.hp-d);C.dd=1;C.fl.push([d,cr?'c':'']);C.shake=true;sfx('hit',(C.hn=(C.hn||0)+1)*.06-.06);
  if(B.p2&&!B.p2d&&B.hp>0&&B.hp<=B.mx/2){B.p2d=true;B.str+=4;log('2페이즈! 보스가 폭주한다 — 공격력 +4')}phase()}
 // 주요 기믹(체력 구간 기믹·전멸기·미니게임) 중엔 무력화 잠금. "무력화 필요"(chg) 패턴은 무력화가 답이라 제외
 // 플레이어 넘어짐: 보스 공격마다 다운 게이지(C.sn)가 쌓이고 100이면 다음 턴 넘어짐(C.stn). 기상기(C.wu=남은 충전 턴, 0이면 준비)로 일어나거나 1턴 행동 불가. it.sn으로 패턴별 덮어쓰기
@@ -1798,7 +1798,7 @@ const gLock=it=>it.k!=='chg'&&!!(it.evg||it.wipe||it.pk);
 const stgLk=it=>gLock(it)||!!(it.wind||it.lev&&!C.levd||it.hole&&C.hd==='c'||C.tuy>0||it.shb);const lkH=(B,lk)=>{const n=Date.now();if(lk&&!B.lkW){B.lkW=1;B.lkT=n}else if(!lk&&B.lkW){B.lkW=0;B.lkU=n}const e=n-((lk?B.lkT:B.lkU)||0);if(lk)return `<span class="lkb kw${e<700?' in':''}" style="--e:${e}ms" data-kw="무력화 불가" tabindex="0" aria-label="무력화 불가"><i></i></span>`;return `<div class="lkw">${bar(B.stg/B.sm*100,'무력화','','#e8e2d4')}${B.lkU&&e<600?`<span class="lkb out" style="--e:${e}ms" aria-hidden="true"><i></i></span>`:''}</div>`};
 function stagger(v){const B=C.B,it=intent();v=Math.round(v*(1+ev('brk')/100));B.stg-=v;C.fl.push([`무력화 ${v}`,'s']);
  if(B.stg<=0&&it.fake){B.stg=B.sm;C.fl.push(['가짜!','']);log('가짜 무력화! 게이지가 되돌아왔다');return}
- if(B.stg<=0&&gLock(it)){B.stg=1;C.fl.push(['기믹 중 무력화 불가','']);log('기믹 중엔 무력화되지 않는다!');return}
+ if(B.stg<=0&&gLock(it)){B.stg=1;log('기믹 중엔 무력화되지 않는다!');return}
  if(B.stg<=0&&(it.wind||it.pk||it.lev&&!C.levd||it.hole&&C.hd==='c'||C.tuy>0||it.shb)){B.stg=1;log(it.wind?'힘을 모으는 중엔 무력화되지 않는다!':'무력화되지 않는다!');return}
  if(B.stg<=0){B.stg=B.sm;B.stun=true;B.vul+=2;C.fl.push(['BREAK!','k']);sfx('brk');fqP(['brk','boss',.05,{dy:60}]);log(intent().k==='chg'?'무력화 성공! 대형 패턴을 끊었다':'무력화! 다음 행동 불가 + 취약')}}
 function apply(d,ck){const B=C.B;C.hn=0;const q=C.fq=C.fq||[],cf=FXC[ck];if(d.blk)sfx('block');if(cf)q.push(...cf.map(z=>z.slice()));else{if(d.blk)q.push(['block','mei',0,{radius:20,dy:14}]);if(d.heal)q.push(['heal','mei',0])}if(d.blk)C.blk+=d.blk;
